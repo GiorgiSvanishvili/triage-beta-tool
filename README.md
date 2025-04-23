@@ -13,8 +13,14 @@ This beta uses synthetic data for testing. It predicts based on clinical rules (
 
 ## How to Run
 
-Run the tool on your computer with these steps.
+Try the app online or run it locally.
 
+### Option 1: Use the Online App
+- Visit: [https://triage-beta-tool.streamlit.app](https://triage-beta-tool.streamlit.app/)
+- Enter data (e.g., SpO2 = 98%, no chest pain) with sliders/checkboxes.
+- Click **Predict** to see the ER or Discharge result.
+
+### Option 2: Run Locally
 ### Prerequisites
 - Python 3.7–3.10.
 - pip (included with Python).
