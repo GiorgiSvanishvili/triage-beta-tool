@@ -1,16 +1,6 @@
-Accuracy: 0.9480
-Sensitivity: 0.9730
-Specificity: 0.9730
-
+Accuracy: 0.860
+Sensitivity (Recall): 0.992
+Precision: 0.824
 Confusion Matrix:
-{cm}
-
-Classification Report:
-                     precision    recall  f1-score   support
-
-  Safe to Discharge       0.88      0.84      0.86       184
-Needs ER Evaluation       0.96      0.97      0.97       816
-
-           accuracy                           0.95      1000
-          macro avg       0.92      0.90      0.91      1000
-       weighted avg       0.95      0.95      0.95      1000
+[[ 46  27]
+ [  1 126]]
