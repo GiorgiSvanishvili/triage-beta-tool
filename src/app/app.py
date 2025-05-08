@@ -35,6 +35,8 @@ with st.form("triage_form"):
     syncope = st.checkbox("Syncope (Fainting)", value=False)
     age = st.slider("Age (years)", min_value=18, max_value=100, value=28, step=1)
     heart_disease = st.checkbox("Heart Disease", value=False)
+    sex = st.selectbox("Sex", ["Male", "Female"])
+    race = st.selectbox("Race", ["Asian", "Black", "White", "Hispanic", "Other"])
 
     # Submit button
     submitted = st.form_submit_button("Predict")
@@ -53,36 +55,54 @@ if submitted:
         "unilateral_weakness": [1 if unilateral_weakness else 0],
         "trouble_speaking": [1 if trouble_speaking else 0],
         "trouble_walking": [1 if trouble_walking else 0],
-        "syncope": [1 if syncope else 0]
+        "syncope": [1 if syncope else 0],
+        "sex": [0 if sex == "Male" else 1 if sex == "Female" else 2],
+        "race": [race]
     })
 
-    # Validate input data
+    # Define expected features for prediction
     expected_features = [
         "SpO2", "blood_pressure", "temperature", "chest_pain",
         "shortness_of_breath", "heart_disease", "age",
         "unilateral_weakness", "trouble_speaking", "trouble_walking", "syncope"
     ]
-    if list(input_data.columns) != expected_features:
-        st.error(f"Input data has incorrect features. Expected: {expected_features}")
+
+    # Validate input data contains expected features
+    missing_features = [f for f in expected_features if f not in input_data.columns]
+    if missing_features:
+        st.error(f"Missing features in input data: {missing_features}. Got: {list(input_data.columns)}")
+        st.stop()
+
+    # Select only expected features for prediction
+    try:
+        prediction_data = input_data[expected_features].copy()
+    except KeyError as e:
+        st.error(f"Error selecting features: {str(e)}. Available columns: {list(input_data.columns)}")
+        st.stop()
+
+    # Validate prediction data columns
+    if list(prediction_data.columns) != expected_features:
+        st.error(
+            f"Prediction data has incorrect features. Expected: {expected_features}, Got: {list(prediction_data.columns)}")
         st.stop()
 
     # Validate value ranges
-    if not (80 <= input_data["SpO2"].iloc[0] <= 100):
-        st.error(f"SpO2 value {input_data['SpO2'].iloc[0]} is out of range (80–100%)")
+    if not (80 <= prediction_data["SpO2"].iloc[0] <= 100):
+        st.error(f"SpO2 value {prediction_data['SpO2'].iloc[0]} is out of range (80–100%)")
         st.stop()
-    if not (70 <= input_data["blood_pressure"].iloc[0] <= 200):
-        st.error(f"Blood pressure value {input_data['blood_pressure'].iloc[0]} is out of range (70–200 mmHg)")
+    if not (70 <= prediction_data["blood_pressure"].iloc[0] <= 200):
+        st.error(f"Blood pressure value {prediction_data['blood_pressure'].iloc[0]} is out of range (70–200 mmHg)")
         st.stop()
-    if not (35 <= input_data["temperature"].iloc[0] <= 42):
-        st.error(f"Temperature value {input_data['temperature'].iloc[0]} is out of range (35–42°C)")
+    if not (35 <= prediction_data["temperature"].iloc[0] <= 42):
+        st.error(f"Temperature value {prediction_data['temperature'].iloc[0]} is out of range (35–42°C)")
         st.stop()
-    if not (18 <= input_data["age"].iloc[0] <= 100):
-        st.error(f"Age value {input_data['age'].iloc[0]} is out of range (18–100 years)")
+    if not (18 <= prediction_data["age"].iloc[0] <= 100):
+        st.error(f"Age value {prediction_data['age'].iloc[0]} is out of range (18–100 years)")
         st.stop()
 
     # Get prediction
     try:
-        prediction, er_probability, discharge_probability, message = get_prediction(input_data, SCRIPT_DIR)
+        prediction, er_probability, discharge_probability, message = get_prediction(prediction_data, SCRIPT_DIR)
     except Exception as e:
         st.error(f"Prediction error: {str(e)}")
         st.stop()
