@@ -39,12 +39,12 @@ def get_prediction(input_data, script_dir):
     except KeyError as e:
         raise KeyError(f"Missing stroke-related feature: {str(e)}")
 
-    if sum(stroke_related) >= 2:
+    if sum(stroke_related) >= 1:
         return (
             1,
             1.0,
             0.0,
-            "Two or more stroke-related symptoms detected. Immediate ER evaluation required."
+            "One or more stroke-related symptoms detected. Immediate ER evaluation required."
         )
 
     # Scale continuous features
