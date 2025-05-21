@@ -113,7 +113,7 @@ if submitted:
         st.write(f"**ER Probability**: {er_probability * 100:.1f}%")
         if message:
             st.warning(message)
-        st.warning("This patient may need urgent care. Please review carefully.")
+        # st.warning("This patient may need urgent care. Please review carefully.")
     else:
         st.success(f"**Result**: Safe to Discharge")
         st.write(f"**Discharge Probability**: {discharge_probability * 100:.1f}%")
