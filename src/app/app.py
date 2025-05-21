@@ -18,6 +18,7 @@ except ImportError as e:
     st.stop()
 
 # Set page title
+st.set_page_config(page_title="Triage Tool Beta", layout="wide")
 st.title("Triage Tool Beta")
 
 # Create input form
@@ -25,8 +26,7 @@ st.header("Enter Patient Data")
 with st.form("triage_form"):
     temperature = st.slider("Temperature (°C)", min_value=35.0, max_value=42.0, value=37.7, step=0.1)
     spo2 = st.slider("SpO2 (%)", min_value=80.0, max_value=100.0, value=98.0, step=0.1)
-    blood_pressure = st.slider("Blood Pressure (Systolic, mmHg)", min_value=70.0, max_value=200.0, value=113.0,
-                               step=1.0)
+    blood_pressure = st.slider("Blood Pressure (Systolic, mmHg)", min_value=70.0, max_value=200.0, value=113.0, step=1.0)
     chest_pain = st.checkbox("Chest Pain", value=False)
     shortness_of_breath = st.checkbox("Shortness of Breath", value=False)
     unilateral_weakness = st.checkbox("Sudden Unilateral Weakness", value=False)
@@ -82,8 +82,7 @@ if submitted:
 
     # Validate prediction data columns
     if list(prediction_data.columns) != expected_features:
-        st.error(
-            f"Prediction data has incorrect features. Expected: {expected_features}, Got: {list(prediction_data.columns)}")
+        st.error(f"Prediction data has incorrect features. Expected: {expected_features}, Got: {list(prediction_data.columns)}")
         st.stop()
 
     # Validate value ranges
@@ -109,27 +108,43 @@ if submitted:
 
     # Display prediction
     st.header("Prediction")
-    st.write(f"**Result**: {'Needs ER Evaluation' if prediction == 1 else 'Safe to Discharge'}")
-    st.write(f"**ER Probability**: {er_probability * 100:.1f}%")
-    st.write(f"**Discharge Probability**: {discharge_probability * 100:.1f}%")
-    if message:
-        st.warning(message)
     if prediction == 1:
+        st.error(f"**Result**: Needs ER Evaluation")
+        st.write(f"**ER Probability**: {er_probability * 100:.1f}%")
+        if message:
+            st.warning(message)
         st.warning("This patient may need urgent care. Please review carefully.")
+    else:
+        st.success(f"**Result**: Safe to Discharge")
+        st.write(f"**Discharge Probability**: {discharge_probability * 100:.1f}%")
 
-    # Diagnostic Test Recommendations (only if Needs ER Evaluation)
-    if prediction == 1:
-        st.header("Recommended Diagnostic Tests")
-        try:
-            recommendations = get_recommendations(input_data, er_probability)
-        except Exception as e:
-            st.error(f"Recommendation error: {str(e)}")
-            st.stop()
+    # Diagnostic Test Recommendations (for all cases)
+    try:
+        recommendations = get_recommendations(input_data, er_probability)
+    except Exception as e:
+        st.error(f"Recommendation error: {str(e)}")
+        st.stop()
 
-        if recommendations:
-            st.write("Based on the patient’s symptoms and risk profile, the following tests are recommended:")
+    with st.expander("View Recommended Tests", expanded=True):
+        st.markdown("**Recommended Diagnostic Tests**")
+        if recommendations and recommendations != ["- **No specific tests recommended**."]:
+            st.markdown("Based on the patient’s symptoms and risk profile, the following tests are recommended:")
+            # Clean and format recommendations
+            cleaned_recommendations = []
             for rec in recommendations:
-                st.write(rec)
+                # Remove leading bullet and normalize
+                rec_clean = rec.strip().lstrip("- ")
+                # Handle cardiac recommendations
+                if rec_clean.startswith("**Cardiac Risk Tests**: "):
+                    # Extract individual tests, preserving commas in descriptions
+                    tests = rec_clean[len("**Cardiac Risk Tests**: "):].split(" - ")
+                    cleaned_recommendations.extend(t.strip().lstrip("- ") for t in tests if t.strip())
+                else:
+                    cleaned_recommendations.append(rec_clean)
+            # Display as a bullet list with consistent bold formatting
+            for rec in sorted(set(cleaned_recommendations), key=lambda x: x.lower()):  # Sort case-insensitively
+                # Remove any existing bold markdown and apply new bold formatting
+                rec_clean = rec.replace("**", "").strip()
+                st.markdown(f"- **{rec_clean}**")
         else:
-            st.write(
-                "No specific diagnostic tests recommended based on current criteria. Consider standard ER evaluation.")
+            st.markdown("No specific diagnostic tests recommended based on current criteria. Consider standard evaluation.")
