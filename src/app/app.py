@@ -21,38 +21,42 @@ st.set_page_config(page_title="ER Triage Tool", layout="wide")
 st.title("ER Triage Tool")
 
 # Create input form
-# st.header("Enter Patient Data")
 with st.form("triage_form"):
     # Demographic inputs
     st.subheader("Demographics")
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
         sex = st.selectbox("Sex", ["Male", "Female"])
     with col2:
         race = st.selectbox("Race", ["Asian", "Black", "White", "Hispanic", "Other"])
     with col3:
         age = st.number_input("Age (years)", min_value=18, max_value=100, value=50, step=1)
+    with col4:
+        mode_of_arrival = st.selectbox("Mode of Arrival", ["Walk-in", "Ambulance", "Other"])
 
-    # Clinical inputs
+    # Vital signs
     st.subheader("Vital Signs")
-    spo2 = st.slider("SpO2 (%)", min_value=80.0, max_value=100.0, value=98.0, step=0.1)
-    blood_pressure = st.slider("Systolic Blood Pressure (mmHg)", min_value=70.0, max_value=200.0, value=120.0, step=1.0)
     temperature = st.slider("Temperature (°C)", min_value=35.0, max_value=40.0, value=37.0, step=0.1)
     pulse = st.slider("Pulse (bpm)", min_value=40, max_value=180, value=75, step=1)
-    blood_sugar = st.slider("Blood Glucose (mg/dL)", min_value=50, max_value=400, value=100, step=1)
+    blood_pressure = st.slider("Systolic Blood Pressure (mmHg)", min_value=70.0, max_value=200.0, value=120.0, step=1.0)
     respiratory_rate = st.slider("Respiratory Rate (breaths/min)", min_value=8, max_value=40, value=16, step=1)
+    spo2 = st.slider("SpO2 (%)", min_value=80.0, max_value=100.0, value=98.0, step=0.1)
+    blood_sugar = st.slider("Blood Glucose (mg/dL)", min_value=50, max_value=400, value=100, step=1)
 
-    st.subheader("Symptoms and History")
+    # Past Medical History
+    st.subheader("Past Medical History")
+    heart_disease = st.checkbox("Heart Disease")
+    diabetes = st.checkbox("Diabetes")
+
+    # Current Symptoms
+    st.subheader("Current Symptoms")
     chest_pain = st.checkbox("Chest Pain")
     shortness_of_breath = st.checkbox("Shortness of Breath")
-    heart_disease = st.checkbox("Heart Disease")
     unilateral_weakness = st.checkbox("Unilateral Weakness")
     trouble_speaking = st.checkbox("Trouble Speaking")
     trouble_walking = st.checkbox("Trouble Walking")
     syncope = st.checkbox("Syncope")
-    diabetes = st.checkbox("Diabetes")
     altered_mental_status = st.checkbox("Altered Mental Status (e.g., confusion)")
-    mode_of_arrival = st.selectbox("Mode of Arrival", ["Walk-in", "Ambulance", "Other"])
 
     # Submit button
     submitted = st.form_submit_button("Predict")
