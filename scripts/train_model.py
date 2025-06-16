@@ -8,7 +8,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Define paths relative to project root
 DATA_PATH = os.path.join(SCRIPT_DIR, "..", "data", "er_data.csv")
-MODEL_PATH = os.path.join(SCRIPT_DIR, "..", "model", "er_model.pkl")
+MODEL_PATH = os.path.join(SCRIPT_DIR, "..", "model", "triage_model.pkl")  # Changed to triage_model.pkl
 
 # Load data
 try:
@@ -32,6 +32,7 @@ y = df['needs_er']
 model = RandomForestClassifier(n_estimators=100, random_state=42, class_weight='balanced')
 model.fit(X, y)
 print("Model trained successfully")
+print(f"Fitted features: {model.feature_names_in_}")  # Debug feature names
 
 # Save model
 os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
