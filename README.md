@@ -1,15 +1,15 @@
-# Triage Tool Beta
+# Triage Tool
 
 ## What It Is
 
-The **Triage Tool Beta** is a web app that helps healthcare providers decide if a patient needs **Emergency Room (ER) care** or can be **safely discharged**. It analyzes 9 patient features, like oxygen levels, blood pressure, and symptoms (e.g., chest pain), using machine learning.
+The **Triage Tool** was developed as a pre-triage application to assist individuals outside hospital environments in identifying potential emergency conditions, enabling timely intervention. It analyzes 17 patient features, like oxygen levels, blood pressure, and symptoms (e.g., chest pain), using machine learning.
 
 **Benefits**:
-- **Safe**: Detects 95.1% of ER cases, ensuring critical patients are identified.
-- **Accurate**: Correctly predicts 92.3% of cases.
-- **Easy to Use**: Simple web interface for entering patient data.
-
-This beta uses synthetic data for testing. It predicts based on clinical rules (e.g., low oxygen or chest pain = ER). Future versions will use real patient data.
+- Predicts needs_er using a RandomForestClassifier trained on synthetic data.
+- Detects more than 95% of ER cases, ensuring critical patients are identified.
+- Supports input of vital signs, symptoms, and medical history.
+- Simple web interface for entering patient data.
+- Deployable via Streamlit for user-friendly interaction.
 
 ## How to Run
 
@@ -32,9 +32,26 @@ Try the app online or run it locally.
    git clone https://github.com/GiorgiSvanishvili/triage-beta-tool
    cd triage-beta-tool
 
-2. **Install Dependencies**:
+2. **Create a virtual environment and install dependencies**:
    ```bash
-    pip install -r requirements.txt
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+      
 3. **Run the Web App**:
     ```bash
     streamlit run app/app.py
+
+Replace app.py with your Streamlit script path (e.g., /scripts/app.py).
+The app will open in your default browser at http://localhost:8501.
+
+## Usage
+   
+- Generate test data with generate_data.py.
+- Train the model with train_model.py.
+- Evaluate with evaluate_model.py to update metrics.txt.
+
+## Documentation
+
+  See Triage Tool Beta [Documentation](https://docs.google.com/document/d/1FniBsc5VBB5BXAKLZxAYxwkVUe46tqF7ZZ1omVzNRfQ/) for detailed information on aims, creation, logic, and results.
+   
